@@ -27,7 +27,18 @@ endfunction
 nnoremap wqc<CR> :call CloseNERDTreeAndQuit()<CR>
 nnoremap qc<CR> :call CloseNERDTreeAndQuit()<CR>
 
-autocmd VimEnter * NERDTree | wincmd L | vertical resize 30 | new | call term_start(&shell) | wincmd J | resize 18 | wincmd k | wincmd l | quit | resize 52 | wincmd h
+
+autocmd VimEnter * NERDTree | wincmd L | vertical resize 30 | new | call s:OpenTerminalAndMap() | wincmd J | resize 18 | wincmd k | wincmd l | quit | resize 52 | wincmd h
+
+let g:term_buf = -1
+let g:job_id = -1
+let g:poll_timer = -1
+
+function! s:OpenTerminalAndMap() abort
+	  let term_buf = term_start(&shell)
+	    execute term_buf . 'buffer'
+		  execute 'tnoremap <buffer> <CR> <CR><C-\><C-n>:NERDTreeRefreshRoot<CR>i'
+endfunction
 
 augroup CocHighlightOverride
 	  autocmd!
@@ -98,6 +109,7 @@ call plug#begin('~/.vim/plugged')
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'vim-syntastic/syntastic'
 Plug 'preservim/nerdtree'
+Plug 'unkiwii/vim-nerdtree-sync'
 
 call plug#end()
 
