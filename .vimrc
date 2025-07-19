@@ -27,13 +27,7 @@ endfunction
 nnoremap wqc<CR> :call CloseNERDTreeAndQuit()<CR>
 nnoremap qc<CR> :call CloseNERDTreeAndQuit()<CR>
 
-"autocmd VimEnter * NERDTree | wincmd L | vertical resize 30 | belowright split | call term_start(&shell) | resize 18 | wincmd k
-
-"autocmd VimEnter * NERDTree | wincmd L | vertical resize 30 | botright new | call term_start(&shell) | resize 18 | wincmd k
 autocmd VimEnter * NERDTree | wincmd L | vertical resize 30 | new | call term_start(&shell) | wincmd J | resize 18 | wincmd k | wincmd l | quit | resize 52 | wincmd h
-
-"autocmd VimEnter * NERDTree | wincmd L | vertical resize 30
-"autocmd VimEnter * :botright terminal | resize 18
 
 augroup CocHighlightOverride
 	  autocmd!
