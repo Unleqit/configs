@@ -7,43 +7,58 @@ set visualbell
 set t_vb=
 set shell=/bin/bash
 
+let g:term_buf = -1
+
 inoremap <expr> <CR> (pumvisible() ? "\<C-y>" : "\<CR>")
 nnoremap <C-n> :NERDTreeToggle<CR>
+nnoremap <silent> <F5> :call RunProgram()<CR>
+nnoremap a i
+nnoremap q <Nop>
 tnoremap <Esc> <C-\><C-n>
-
-function! CloseNERDTreeAndQuit()
-	NERDTreeClose
-    tabdo windo if &buftype ==# 'terminal' | execute 'q!' | endif
-	tabdo if &buftype == '' | wq | endif
-	quit
-endfunction
-
-function! CloseNERDTreeAndQuitNoSave()
-	NERDTreeClose
-	tabdo if &buftype == '' | quit | endif
-	quit
-endfunction
-
-nnoremap wqc<CR> :call CloseNERDTreeAndQuit()<CR>
-nnoremap qc<CR> :call CloseNERDTreeAndQuit()<CR>
-
+tnoremap <silent> <F5> :call RunMakeAndWait()<CR>
+vnoremap q <Nop>
+command! -bang Q quitall<bang>
+cnoreabbrev <expr> q getcmdtype() == ':' && getcmdline() ==# 'q' ? 'call ch_sendraw(term_getjob(g:term_buf), "exit\n") \| quitall!' : 'q'
+cnoreabbrev <expr> wq getcmdtype() == ':' && getcmdline() ==# 'wq' ? 'wa \| call ch_sendraw(term_getjob(g:term_buf), "exit\n") \| quitall!' : 'wq'
 
 autocmd VimEnter * NERDTree | wincmd L | vertical resize 30 | new | call s:OpenTerminalAndMap() | wincmd J | resize 18 | wincmd k | wincmd l | quit | resize 52 | wincmd h
 
-let g:term_buf = -1
-let g:job_id = -1
-let g:poll_timer = -1
-
-function! s:OpenTerminalAndMap() abort
-	  let term_buf = term_start(&shell)
-	    execute term_buf . 'buffer'
-		  execute 'tnoremap <buffer> <CR> <CR><C-\><C-n>:NERDTreeRefreshRoot<CR>i'
+let g:prevJob = 0
+function! RunProgram() abort
+  if &filetype ==# 'c'
+    call ch_sendraw(term_getjob(g:term_buf), "make run\n")
+    sleep 500m
+    execute 'NERDTreeRefreshRoot'
+  elseif &filetype ==# 'cs'
+    let msgs = execute('messages')
+	let l:match = matchlist(msgs, 'Loaded server for \zs\S\+\.sln')
+	let l:sln_path = l:match[0]
+	let l:sln_dir = fnamemodify(l:sln_path, ':h')
+	let l:job = term_getjob(g:term_buf)
+"	echo l:prevJob
+	if !empty(g:prevJob)
+	  call ch_sendraw(l:job, "\x03")
+	  let g:prevJob = 0
+	  sleep 1250m
+	endif
+	let g:prevJob = l:job
+	call ch_sendraw(l:job, "cd " . l:sln_dir . "\n")
+	call ch_sendraw(l:job, "./build.sh\n")
+  endif
 endfunction
 
+function! s:OpenTerminalAndMap() abort
+	let g:term_buf = term_start(&shell)
+	execute g:term_buf . 'buffer'
+	execute 'tnoremap <buffer> <CR> <CR><C-\><C-n>:NERDTreeRefreshRoot<CR>i'
+endfunction
+
+
 augroup CocHighlightOverride
-	  autocmd!
-	    autocmd ColorScheme * nested call Highlights()
+	autocmd!
+	autocmd ColorScheme * nested call Highlights()
 augroup END
+
 
 function! Highlights()
 	highlight CocErrorSign       guifg=#ff0000
@@ -110,10 +125,12 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'vim-syntastic/syntastic'
 Plug 'preservim/nerdtree'
 Plug 'unkiwii/vim-nerdtree-sync'
+Plug 'OmniSharp/omnisharp-vim'
+
 
 call plug#end()
 
 filetype plugin on
 syntax on
-autocmd FileType c,cpp,cs setlocal omnifunc=CocActionAsync
+autocmd FileType c,cpp setlocal omnifunc=CocActionAsync
 
