@@ -15,7 +15,7 @@ nnoremap <silent> <F5> :call RunProgram()<CR>
 nnoremap a i
 nnoremap q <Nop>
 tnoremap <Esc> <C-\><C-n>
-tnoremap <silent> <F5> :call RunMakeAndWait()<CR>
+tnoremap <silent> <F5> :call RunProgram()<CR>
 vnoremap q <Nop>
 command! -bang Q quitall<bang>
 cnoreabbrev <expr> q getcmdtype() == ':' && getcmdline() ==# 'q' ? 'call ch_sendraw(term_getjob(g:term_buf), "exit\n") \| quitall!' : 'q'
@@ -35,7 +35,6 @@ function! RunProgram() abort
 	let l:sln_path = l:match[0]
 	let l:sln_dir = fnamemodify(l:sln_path, ':h')
 	let l:job = term_getjob(g:term_buf)
-"	echo l:prevJob
 	if !empty(g:prevJob)
 	  call ch_sendraw(l:job, "\x03")
 	  let g:prevJob = 0
@@ -53,12 +52,10 @@ function! s:OpenTerminalAndMap() abort
 	execute 'tnoremap <buffer> <CR> <CR><C-\><C-n>:NERDTreeRefreshRoot<CR>i'
 endfunction
 
-
 augroup CocHighlightOverride
 	autocmd!
 	autocmd ColorScheme * nested call Highlights()
 augroup END
-
 
 function! Highlights()
 	highlight CocErrorSign       guifg=#ff0000
@@ -126,7 +123,6 @@ Plug 'vim-syntastic/syntastic'
 Plug 'preservim/nerdtree'
 Plug 'unkiwii/vim-nerdtree-sync'
 Plug 'OmniSharp/omnisharp-vim'
-
 
 call plug#end()
 
