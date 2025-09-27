@@ -1,0 +1,35 @@
+highlight csUnspecifiedStatement   ctermfg=27
+highlight csModifier               ctermfg=27
+highlight csClass                  ctermfg=27
+highlight csClassType              ctermfg=30
+highlight csType                   ctermfg=27
+highlight csStorage                ctermfg=27
+highlight csRepeat                 ctermfg=27
+highlight csConditional            ctermfg=27
+highlight csLabel                  ctermfg=27
+highlight csConstant               ctermfg=27
+highlight csException              ctermfg=27
+highlight csUnspecifiedKeyword     ctermfg=27
+highlight csLineComment            ctermfg=DarkGreen
+highlight csBlockComment           ctermfg=DarkGreen
+highlight csBoolean                ctermfg=27
+highlight csOpSymbols              ctermfg=7
+highlight csNew                    ctermfg=27
+highlight csString                 ctermfg=DarkRed
+highlight csNew                    ctermfg=27
+highlight csAccess                 ctermfg=27
+highlight csAccessor               ctermfg=27
+highlight csNull                   ctermfg=27
+highlight csStatement              ctermfg=27
+highlight csTypeOf                 ctermfg=27
+highlight csTypeOfOperand          ctermfg=27
+highlight csUnsupportedStatement   ctermfg=27
+highlight csCharacter              ctermfg=124
+highlight csInteger                ctermfg=7
+highlight csLogicSymbols           ctermfg=7
+highlight csLinq                   ctermfg=7
+highlight csXmlLineCommentLeader   ctermfg=DarkGreen
+highlight csXmlLineComment         ctermfg=DarkGreen
+highlight csXmlTag                 ctermfg=DarkGreen
+highlight Pmenu                    ctermbg=Black ctermfg=White
+highlight CocMenuSel               ctermbg=White ctermfg=Black

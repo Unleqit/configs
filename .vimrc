@@ -6,6 +6,13 @@ set noerrorbells
 set visualbell
 set t_vb=
 set shell=/bin/bash
+set incsearch
+set hlsearch
+set ignorecase
+set smartcase
+set autoindent
+set smartindent
+set expandtab
 
 let g:term_buf = -1
 
@@ -22,6 +29,14 @@ cnoreabbrev <expr> q getcmdtype() == ':' && getcmdline() ==# 'q' ? 'call ch_send
 cnoreabbrev <expr> wq getcmdtype() == ':' && getcmdline() ==# 'wq' ? 'wa \| call ch_sendraw(term_getjob(g:term_buf), "exit\n") \| quitall!' : 'wq'
 
 autocmd VimEnter * NERDTree | wincmd L | vertical resize 30 | new | call s:OpenTerminalAndMap() | wincmd J | resize 18 | wincmd k | wincmd l | quit | resize 52 | wincmd h
+autocmd VimEnter * highlight NERDTreeDir       ctermfg=30
+autocmd VimEnter * highlight NERDTreeDirSlash  ctermfg=30
+
+autocmd BufEnter * highlight NERDTreeDir       ctermfg=30
+autocmd BufEnter * highlight NERDTreeDirSlash  ctermfg=30
+autocmd TextChanged,TextChangedI * silent! noh
+autocmd CmdlineLeave : silent! noh
+autocmd FileType cs hi clear
 
 let g:prevJob = 0
 function! RunProgram() abort
@@ -52,70 +67,6 @@ function! s:OpenTerminalAndMap() abort
 	execute 'tnoremap <buffer> <CR> <CR><C-\><C-n>:NERDTreeRefreshRoot<CR>i'
 endfunction
 
-augroup CocHighlightOverride
-	autocmd!
-	autocmd ColorScheme * nested call Highlights()
-augroup END
-
-function! Highlights()
-	highlight CocErrorSign       guifg=#ff0000
-	highlight CocWarningSign     guifg=#ffaa00
-	highlight CocInfoSign        guifg=#00ffff
-	highlight CocHintSign        guifg=#00ff00
-	"
-	highlight CocErrorFloat      guifg=#ff0000
-	highlight CocWarningFloat    guifg=#ffaa00
-	highlight CocInfoFloat       guifg=#00ffff
-	highlight CocHintFloat       guifg=#00ff00
-	"
-	highlight CocErrorHighlight    cterm=underline gui=underline guisp=#ff0000
-	highlight CocWarningHighlight  cterm=underline gui=underline guisp=#ffaa00
-	highlight CocInfoHighlight     cterm=underline gui=underline guisp=#00ffff
-	highlight CocHintHighlight     cterm=underline gui=underline guisp=#00ff00
-	"
-	highlight CocErrorVirtualText    guifg=#ff0000
-	highlight CocWarningVirtualText  guifg=#ffaa00
-	highlight CocInfoVirtualText     guifg=#00ffff
-	highlight CocHintVirtualText     guifg=#00ff00
-	"
-	autocmd ColorScheme * highlight CocMenuSel             guibg=#555555 guifg=#ffffff
-	highlight CocMenu                guibg=#1a1a1a guifg=#ffffff
-	highlight CocPumSearch           guifg=#00afff
-	highlight CocPumDetail           guifg=#999999
-	highlight CocPumShortcut         guifg=#aaaaaa
-	highlight CocPumMenu             guifg=#888888
-	highlight CocDeprecatedHighlight gui=strikethrough guifg=#666666
-	"
-	highlight CocFloating            guibg=#1c1c1c guifg=#ffffff
-	highlight CocFloatBorder         guifg=#ffff00
-	highlight CocFloatThumb          guibg=#5f5f5f
-	highlight CocFloatSbar           guibg=#3a3a3a
-	"
-	highlight CocHighlightText       guibg=#264f78
-	highlight CocFadeOut             guifg=#5c6370
-	highlight CocSymbolHighlight     guibg=#3c3836
-	highlight CocCodeLens            guifg=#999999
-	"
-	highlight CocSearch              guibg=#444444 guifg=#ffffff
-	highlight CocListSearch          guibg=#5f00af guifg=#ffffff
-	highlight CocListSearchLine      guibg=#444444 guifg=#ffffff
-	highlight CocListLine            guibg=NONE guifg=#ffffff
-	"
-	highlight CocListFgWhite         guifg=#ffffff
-	highlight CocListFgBlue          guifg=#5f87ff
-	highlight CocListFgGreen         guifg=#5fff87
-	highlight CocListFgYellow        guifg=#ffff87
-	highlight CocListFgRed           guifg=#ff5f5f
-	highlight CocListFgMagenta       guifg=#ff87ff
-	highlight CocListFgCyan          guifg=#5fffff
-	highlight CocListFgBlack         guifg=#000000
-	highlight CocListFgGray          guifg=#888888
-	highlight CocListFgDarkBlue      guifg=#0000af
-	highlight CocListMode            guifg=#afff5f
-endfunction
-
-call Highlights()
-
 call plug#begin('~/.vim/plugged')
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -123,10 +74,14 @@ Plug 'vim-syntastic/syntastic'
 Plug 'preservim/nerdtree'
 Plug 'unkiwii/vim-nerdtree-sync'
 Plug 'OmniSharp/omnisharp-vim'
+"Plug 'haya14busa/incsearch.vim'
 
 call plug#end()
 
 filetype plugin on
 syntax on
+
 autocmd FileType c,cpp setlocal omnifunc=CocActionAsync
+
+let g:OmniSharp_highlighting = 0
 
