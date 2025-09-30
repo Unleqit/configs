@@ -17,18 +17,50 @@ set expandtab
 let g:term_buf = -1
 
 inoremap <expr> <CR> (pumvisible() ? "\<C-y>" : "\<CR>")
+inoremap <S-Tab> <C-d>
 nnoremap <C-n> :NERDTreeToggle<CR>
 nnoremap <silent> <F5> :call RunProgram()<CR>
 nnoremap a i
 nnoremap q <Nop>
+nnoremap <S-Tab> <<
 tnoremap <Esc> <C-\><C-n>
 tnoremap <silent> <F5> :call RunProgram()<CR>
 vnoremap q <Nop>
+vnoremap < <gv
+vnoremap > >gv
 command! -bang Q quitall<bang>
 cnoreabbrev <expr> q getcmdtype() == ':' && getcmdline() ==# 'q' ? 'call ch_sendraw(term_getjob(g:term_buf), "exit\n") \| quitall!' : 'q'
 cnoreabbrev <expr> wq getcmdtype() == ':' && getcmdline() ==# 'wq' ? 'wa \| call ch_sendraw(term_getjob(g:term_buf), "exit\n") \| quitall!' : 'wq'
 
-autocmd VimEnter * NERDTree | wincmd L | vertical resize 30 | new | call s:OpenTerminalAndMap() | wincmd J | resize 18 | wincmd k | wincmd l | quit | resize 52 | wincmd h
+function! s:SetupLayout()
+    NERDTree | wincmd L | vertical resize 30 | new | call s:OpenTerminalAndMap() | wincmd J | resize 18 | wincmd k | wincmd l | quit | resize 52 | wincmd h
+endfunction
+
+autocmd VimEnter * call s:SetupLayout()
+autocmd VimResized * call s:ResizeLayout()
+
+function! s:ResizeLayout()
+    let l:nerdtree_win = bufwinnr('NERD_tree_1')
+    if l:nerdtree_win >= 0
+        exec l:nerdtree_win . "wincmd w"
+        wincmd L
+        vertical resize 30
+    endif
+
+    for w in range(1, winnr('$'))
+        if getwinvar(w, '&buftype') ==# 'terminal'
+            exec w . 'wincmd w'
+            wincmd J
+            resize 18
+        endif
+    endfor
+
+    wincmd k
+    wincmd l
+    resize 52
+endfunction
+
+
 autocmd VimEnter * highlight NERDTreeDir       ctermfg=30
 autocmd VimEnter * highlight NERDTreeDirSlash  ctermfg=30
 
@@ -46,7 +78,7 @@ function! RunProgram() abort
     execute 'NERDTreeRefreshRoot'
   elseif &filetype ==# 'cs'
     let msgs = execute('messages')
-	let l:match = matchlist(msgs, 'Loaded server for \zs\S\+\.sln')
+	let l:match = matchlist(msgs, 'Loaded server for \zs.\+\.sln')
 	let l:sln_path = l:match[0]
 	let l:sln_dir = fnamemodify(l:sln_path, ':h')
 	let l:job = term_getjob(g:term_buf)
@@ -56,7 +88,7 @@ function! RunProgram() abort
 	  sleep 1250m
 	endif
 	let g:prevJob = l:job
-	call ch_sendraw(l:job, "cd " . l:sln_dir . "\n")
+	call ch_sendraw(l:job, "cd '" . l:sln_dir . "'\n")
 	call ch_sendraw(l:job, "./build.sh\n")
   endif
 endfunction
