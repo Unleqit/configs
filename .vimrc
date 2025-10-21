@@ -106,7 +106,6 @@ Plug 'vim-syntastic/syntastic'
 Plug 'preservim/nerdtree'
 Plug 'unkiwii/vim-nerdtree-sync'
 Plug 'OmniSharp/omnisharp-vim'
-"Plug 'haya14busa/incsearch.vim'
 
 call plug#end()
 
